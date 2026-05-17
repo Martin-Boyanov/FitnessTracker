@@ -3,6 +3,7 @@
 #include "../include/UserProfile.h"
 #include "../include/Exercise.h"
 #include "../include/Workout.h"
+#include "../include/Calculator.h"
 
 using namespace std;
 
@@ -87,6 +88,14 @@ int main() {
     workout.addExerciseLog(squatLog);
 
     workout.showWorkout();
+
+    OneRepMaxCalculator oneRepMax("Bench Press", 80, 10);
+
+    cout << "\n===== One Rep Max Calculator =====\n";
+    cout << "Exercise: " << oneRepMax.getExerciseName() << endl;
+    cout << "Weight: " << oneRepMax.getWeightKg() << " kg" << endl;
+    cout << "Reps: " << oneRepMax.getReps() << endl;
+    cout << "Estimated 1RM: " << oneRepMax.calculate() << " kg" << endl;
 
     for (Exercise* exercise : exercises) {
         delete exercise;
