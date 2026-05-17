@@ -2,6 +2,7 @@
 #include <vector>
 #include "../include/UserProfile.h"
 #include "../include/Exercise.h"
+#include "../include/Workout.h"
 
 using namespace std;
 
@@ -65,6 +66,27 @@ int main() {
         cout << exercise->getDetails();
         cout << "Progression: " << exercise->getProgressionInfo() << endl;
     }
+
+    WorkoutSession workout(
+        "17.05.2026",
+        "Chest and legs workout",
+        75
+    );
+
+    ExerciseLog benchPressLog(exercises[1]);
+    benchPressLog.addSet(ExerciseSet(10, 80));
+    benchPressLog.addSet(ExerciseSet(8, 85));
+    benchPressLog.addSet(ExerciseSet(6, 90));
+
+    ExerciseLog squatLog(exercises[0]);
+    squatLog.addSet(ExerciseSet(10, 90));
+    squatLog.addSet(ExerciseSet(8, 100));
+    squatLog.addSet(ExerciseSet(6, 110));
+
+    workout.addExerciseLog(benchPressLog);
+    workout.addExerciseLog(squatLog);
+
+    workout.showWorkout();
 
     for (Exercise* exercise : exercises) {
         delete exercise;
