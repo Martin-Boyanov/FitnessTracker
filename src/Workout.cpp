@@ -45,10 +45,10 @@ void ExerciseLog::showLog() const {
         cout << "Set " << i + 1 << ": "
              << sets[i].getReps() << " reps x "
              << sets[i].getWeightKg() << " kg = "
-             << sets[i].getVolume() << " volume" << endl;
+             << sets[i].getVolume() << " kg lifted" << endl;
     }
 
-    cout << "Exercise volume: " << calculateVolume() << endl;
+    cout << "Exercise training volume: " << calculateVolume() << " kg lifted" << endl;
 }
 
 WorkoutSession::WorkoutSession(
@@ -81,9 +81,15 @@ void WorkoutSession::showWorkout() const {
     cout << "Duration: " << durationMinutes << " minutes" << endl;
     cout << "Notes: " << notes << endl;
 
+    cout << "\nTraining volume explanation:\n";
+    cout << "Volume means total lifted weight: reps x weight.\n";
+    cout << "It is useful for comparing your own progress over time.\n";
+    cout << "There is no universal goal like 4000 kg. The goal is to improve gradually while keeping good form.\n";
+
     for (const ExerciseLog& log : exerciseLogs) {
         log.showLog();
     }
 
-    cout << "\nTotal workout volume: " << calculateTotalVolume() << endl;
+    cout << "\nTotal workout volume: " << calculateTotalVolume() << " kg lifted" << endl;
+    cout << "Use this number to compare similar workouts, not completely different training days.\n";
 }

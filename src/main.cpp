@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <limits>
 #include "../include/UserProfile.h"
 #include "../include/Exercise.h"
 #include "../include/Workout.h"
@@ -7,19 +8,7 @@
 
 using namespace std;
 
-int main() {
-    UserProfile user(
-        "Alex",
-        17,
-        "Male",
-        178,
-        72,
-        "Moderate",
-        "Build muscle"
-    );
-
-    user.showProfile();
-
+vector<Exercise*> createExerciseDatabase() {
     vector<Exercise*> exercises;
 
     exercises.push_back(new StrengthExercise(
@@ -60,14 +49,21 @@ int main() {
         "Moderate"
     ));
 
+    return exercises;
+}
+
+void showExerciseDatabase(const vector<Exercise*>& exercises) {
     cout << "\n===== Exercise Database =====\n";
 
-    for (Exercise* exercise : exercises) {
+    for (int i = 0; i < (int)exercises.size(); i++) {
         cout << "\n-------------------------\n";
-        cout << exercise->getDetails();
-        cout << "Progression: " << exercise->getProgressionInfo() << endl;
+        cout << i + 1 << ". " << exercises[i]->getName() << endl;
+        cout << exercises[i]->getDetails();
+        cout << "Progression: " << exercises[i]->getProgressionInfo() << endl;
     }
+}
 
+void showDemoWorkout(const vector<Exercise*>& exercises) {
     WorkoutSession workout(
         "17.05.2026",
         "Chest and legs workout",
@@ -88,14 +84,135 @@ int main() {
     workout.addExerciseLog(squatLog);
 
     workout.showWorkout();
+}
 
-    OneRepMaxCalculator oneRepMax("Bench Press", 80, 10);
+void calculateOneRepMax(const vector<Exercise*>& exercises) {
+    vector<int> strengthExerciseIndexes;
+
+    cout << "\n===== Choose Strength Exercise =====\n";
+
+    for (int i = 0; i < (int)exercises.size(); i++) {
+        if (dynamic_cast<StrengthExercise*>(exercises[i]) != nullptr) {
+            strengthExerciseIndexes.push_back(i);
+            cout << strengthExerciseIndexes.size() << ". "
+                 << exercises[i]->getName() << endl;
+        }
+    }
+
+    if (strengthExerciseIndexes.empty()) {
+        cout << "\nNo strength exercises available for one rep max calculation.\n";
+        return;
+    }
+
+    int choice;
+    cout << "Choose exercise: ";
+    cin >> choice;
+
+    if (cin.fail() || choice < 1 || choice > (int)strengthExerciseIndexes.size()) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "\nInvalid exercise choice.\n";
+        return;
+    }
+
+    int realExerciseIndex = strengthExerciseIndexes[choice - 1];
+    string exerciseName = exercises[realExerciseIndex]->getName();
+
+    double weightKg;
+    int reps;
+
+    cout << "Enter weight in kg: ";
+    cin >> weightKg;
+
+    if (cin.fail() || weightKg <= 0) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "\nInvalid weight.\n";
+        return;
+    }
+
+    cout << "Enter reps: ";
+    cin >> reps;
+
+    if (cin.fail() || reps <= 0) {
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cout << "\nInvalid reps.\n";
+        return;
+    }
+
+    OneRepMaxCalculator calculator(exerciseName, weightKg, reps);
 
     cout << "\n===== One Rep Max Calculator =====\n";
-    cout << "Exercise: " << oneRepMax.getExerciseName() << endl;
-    cout << "Weight: " << oneRepMax.getWeightKg() << " kg" << endl;
-    cout << "Reps: " << oneRepMax.getReps() << endl;
-    cout << "Estimated 1RM: " << oneRepMax.calculate() << " kg" << endl;
+    cout << "Exercise: " << calculator.getExerciseName() << endl;
+    cout << "Weight: " << calculator.getWeightKg() << " kg" << endl;
+    cout << "Reps: " << calculator.getReps() << endl;
+    cout << "Estimated 1RM: " << calculator.calculate() << " kg" << endl;
+}
+
+void showMenu() {
+    cout << "\n===== Fitness Tracker =====\n";
+    cout << "1. Show user profile\n";
+    cout << "2. Show exercise database\n";
+    cout << "3. Show workout session example\n";
+    cout << "4. Calculate one rep max\n";
+    cout << "5. Exit\n";
+    cout << "Choose option: ";
+}
+
+int main() {
+    UserProfile user(
+        "Alex",
+        17,
+        "Male",
+        178,
+        72,
+        "Moderate",
+        "Build muscle"
+    );
+
+    vector<Exercise*> exercises = createExerciseDatabase();
+
+    int choice;
+
+    do {
+        showMenu();
+        cin >> choice;
+
+        if (cin.fail()) {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "\nInvalid input. Try again.\n";
+            continue;
+        }
+
+        switch (choice) {
+            case 1:
+                user.showProfile();
+                break;
+
+            case 2:
+                showExerciseDatabase(exercises);
+                break;
+
+            case 3:
+                showDemoWorkout(exercises);
+                break;
+
+            case 4:
+                calculateOneRepMax(exercises);
+                break;
+
+            case 5:
+                cout << "\nExiting Fitness Tracker...\n";
+                break;
+
+            default:
+                cout << "\nInvalid option. Try again.\n";
+                break;
+        }
+
+    } while (choice != 5);
 
     for (Exercise* exercise : exercises) {
         delete exercise;
