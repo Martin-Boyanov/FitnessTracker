@@ -239,7 +239,19 @@ vector<Exercise*> createExerciseDatabase() {
 }
 
 TheoryCourse createTheoryCourse() {
-    FitnessQuiz quiz(8);
+    FitnessQuiz quiz(10);
+
+    quiz.addQuestion(QuizQuestion(
+        "What is the main goal of a good workout plan?",
+        {
+            "To randomly use many exercises",
+            "To match exercises, volume and difficulty to the user's goal",
+            "To train only one muscle forever",
+            "To avoid progress"
+        },
+        1,
+        "A good workout plan should match the user's goal, recovery, equipment and training level."
+    ));
 
     quiz.addQuestion(QuizQuestion(
         "Which muscles does the squat mainly train?",
@@ -250,11 +262,11 @@ TheoryCourse createTheoryCourse() {
             "Shoulders only"
         },
         1,
-        "The squat is mainly a lower-body compound movement. It trains quadriceps, glutes, hamstrings and core stabilizers."
+        "The squat is a lower-body compound movement. It trains quadriceps, glutes, hamstrings and core stabilizers."
     ));
 
     quiz.addQuestion(QuizQuestion(
-        "Which exercise is more suitable for chest development?",
+        "Which exercise is most suitable for chest development?",
         {
             "Bench Press",
             "Running",
@@ -262,7 +274,19 @@ TheoryCourse createTheoryCourse() {
             "Dumbbell Row"
         },
         0,
-        "Bench Press targets the chest, front shoulders and triceps."
+        "Bench Press mainly trains the chest, front deltoids and triceps."
+    ));
+
+    quiz.addQuestion(QuizQuestion(
+        "Which exercise mainly targets the back and biceps?",
+        {
+            "Dumbbell Row",
+            "Bench Press",
+            "Push-up",
+            "Running"
+        },
+        0,
+        "Dumbbell Row trains the lats, upper back, rear deltoids and biceps."
     ));
 
     quiz.addQuestion(QuizQuestion(
@@ -274,7 +298,7 @@ TheoryCourse createTheoryCourse() {
             "Avoiding hard sets"
         },
         1,
-        "Progressive overload means gradually increasing weight, reps, sets or difficulty so the body has a reason to adapt."
+        "Progressive overload means gradually increasing weight, reps, sets, time or difficulty so the body adapts."
     ));
 
     quiz.addQuestion(QuizQuestion(
@@ -286,7 +310,7 @@ TheoryCourse createTheoryCourse() {
             "Because cardio is not useful"
         },
         0,
-        "The shoulder has different heads, and different angles emphasize different parts of it."
+        "The shoulder has different heads. Different angles emphasize different parts of the shoulder."
     ));
 
     quiz.addQuestion(QuizQuestion(
@@ -322,31 +346,19 @@ TheoryCourse createTheoryCourse() {
             "No recovery"
         },
         0,
-        "Muscle gain usually needs enough training volume, progressive overload and recovery."
+        "Muscle gain usually needs enough training volume, progressive overload, good form and recovery."
     ));
 
     quiz.addQuestion(QuizQuestion(
-        "Why should workout plans depend on available equipment?",
+        "If you only have bodyweight equipment, what should your plan use?",
         {
-            "Because not every exercise can be done everywhere",
-            "Because equipment does not matter",
-            "Because all exercises are identical",
-            "Because bodyweight exercises are never useful"
+            "Only barbell exercises",
+            "Exercises like push-ups, pull-ups, plank and running",
+            "No training at all",
+            "Only machine exercises"
         },
-        0,
-        "A realistic plan must match the equipment the user actually has."
-    ));
-
-    quiz.addQuestion(QuizQuestion(
-        "Which exercise mainly targets the back and biceps?",
-        {
-            "Dumbbell Row",
-            "Bench Press",
-            "Push-up",
-            "Running"
-        },
-        0,
-        "Dumbbell Row targets the back muscles and also uses the biceps."
+        1,
+        "A realistic workout plan must match the equipment the user actually has."
     ));
 
     quiz.addQuestion(QuizQuestion(
@@ -358,29 +370,107 @@ TheoryCourse createTheoryCourse() {
             "Because records should never change"
         },
         0,
-        "Fitness progress depends on the person, so comparing with your own history is more useful than copying others."
+        "Your own previous results are the most useful comparison because progress depends on the person."
+    ));
+
+    quiz.addQuestion(QuizQuestion(
+        "What is the main role of recovery?",
+        {
+            "It gives the body time to adapt after training",
+            "It makes training useless",
+            "It replaces workouts",
+            "It means never training again"
+        },
+        0,
+        "Training creates stimulus, but recovery allows the body to adapt and improve."
+    ));
+
+    quiz.addQuestion(QuizQuestion(
+        "Which combination is best for a balanced simple workout?",
+        {
+            "Only biceps every day",
+            "Push, pull, legs/core movements",
+            "Only running",
+            "Only plank"
+        },
+        1,
+        "A balanced plan usually includes pushing, pulling, lower-body and core work."
+    ));
+
+    quiz.addQuestion(QuizQuestion(
+        "Why should exercise choice depend on the user's goal?",
+        {
+            "Because different goals need different training focus",
+            "Because goals do not matter",
+            "Because all exercises have the same effect",
+            "Because the user should never choose"
+        },
+        0,
+        "Fat loss, muscle gain and maintenance can use different volume, reps, intensity and exercise choices."
+    ));
+
+    quiz.addQuestion(QuizQuestion(
+        "When building your own workout, what should you be able to explain?",
+        {
+            "Why each exercise is included",
+            "Nothing",
+            "Only the color of the equipment",
+            "Only the date"
+        },
+        0,
+        "If you understand why an exercise is included, you are starting to think like your own coach."
     ));
 
     TheoryCourse course("Build Your Own Basic Workout", quiz);
 
     course.addLesson(TheoryLesson(
-        "Compound exercises",
-        "Compound exercises train multiple muscle groups at the same time. Squat, Bench Press, Pull-up and Dumbbell Row are examples. They are useful because they give a lot of training effect with fewer exercises."
+        "Lesson 1: What a workout plan actually is",
+        "A workout plan is not just a random list of exercises. It is a structured decision: which muscles you want to train, what goal you have, how hard the session should be, and what equipment you can use. A good plan should have a reason behind every exercise."
     ));
 
     course.addLesson(TheoryLesson(
-        "Muscle groups and exercise choice",
+        "Lesson 2: Movement patterns",
+        "A simple workout can be built from movement patterns: push, pull, legs and core. Push exercises include Bench Press and Push-up. Pull exercises include Pull-up and Dumbbell Row. Leg exercises include Squat. Core exercises include Plank."
+    ));
+
+    course.addLesson(TheoryLesson(
+        "Lesson 3: Compound exercises",
+        "Compound exercises train more than one muscle group at the same time. Squat, Bench Press, Pull-up and Dumbbell Row are compound movements. They are useful because they give a lot of training effect with fewer exercises."
+    ));
+
+    course.addLesson(TheoryLesson(
+        "Lesson 4: Muscle groups and exercise choice",
         "A good workout should match exercises to the muscles you want to train. Bench Press trains chest, shoulders and triceps. Squat trains legs and glutes. Rows and pull-ups train back and biceps. Plank trains core stability."
     ));
 
     course.addLesson(TheoryLesson(
-        "Progressive overload",
+        "Lesson 5: Sets, reps and time",
+        "Strength exercises are often measured in sets, reps and weight. Bodyweight exercises like push-ups and pull-ups can be measured in reps. Plank is different because it is an isometric hold, so it is better measured in seconds."
+    ));
+
+    course.addLesson(TheoryLesson(
+        "Lesson 6: Progressive overload",
         "To improve, the body needs a reason to adapt. This can happen by slowly increasing weight, reps, sets, time, or exercise difficulty. The goal is not random hard training, but controlled progress."
     ));
 
     course.addLesson(TheoryLesson(
-        "Building a simple workout",
-        "A simple workout should consider your goal, activity level, equipment and recovery. For muscle gain, use enough sets and moderate reps. For fat loss, use consistent training and nutrition control. For travel mode, choose bodyweight exercises."
+        "Lesson 7: Matching training to goals",
+        "For muscle gain, a workout usually needs enough sets, moderate reps and progressive overload. For fat loss, training should be consistent and combined with calorie control. For maintenance, a balanced plan is usually enough."
+    ));
+
+    course.addLesson(TheoryLesson(
+        "Lesson 8: Equipment-based planning",
+        "A plan must match the available equipment. If you are in a full gym, you can use barbells and dumbbells. If you are travelling, bodyweight exercises are more realistic. A plan that cannot be performed is not a good plan."
+    ));
+
+    course.addLesson(TheoryLesson(
+        "Lesson 9: Recovery and progression",
+        "More training is not always better. The body needs recovery to adapt. A good beginner plan should be challenging, but not impossible. Progress should be gradual, measurable and safe."
+    ));
+
+    course.addLesson(TheoryLesson(
+        "Lesson 10: Thinking like your own coach",
+        "To build your own workout, you should be able to explain why each exercise is included. Example: Push-up is included for chest, shoulders and triceps. Pull-up is included for back and biceps. Squat is included for legs and glutes."
     ));
 
     return course;
@@ -700,7 +790,7 @@ void trackPersonalRecord(
     );
 }
 
-void startTheoryCourse() {
+bool startTheoryCourse() {
     TheoryCourse course = createTheoryCourse();
 
     course.startCourse();
@@ -714,9 +804,19 @@ void startTheoryCourse() {
     if (choice == 1) {
         QuizResult result = course.startQuiz();
         result.showResult();
-    } else {
-        cout << "\nYou can come back to the theory course later.\n";
+
+        if (result.hasPassed()) {
+            cout << "\nYou passed the theory course.\n";
+            cout << "You now understand enough to start building your own workout plan.\n";
+            return true;
+        }
+
+        cout << "\nYou need to pass the quiz before building your own workout.\n";
+        return false;
     }
+
+    cout << "\nYou can come back to the theory course later.\n";
+    return false;
 }
 
 void exportProgressReport(
