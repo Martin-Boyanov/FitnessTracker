@@ -145,41 +145,53 @@ string PersonalRecord::getPerformanceLevel() const {
 }
 
 void PersonalRecord::showRecord() const {
-    cout << exerciseName << ": " << value << " " << unit << endl;
+    cout << *this << endl;
 }
 
 void PersonalRecord::showInsight() const {
+    writeInsight(cout);
+}
+
+void PersonalRecord::writeInsight(ostream& out) const {
     int percentile = estimatePercentile();
 
-    cout << "\nPerformance insight:\n";
-    cout << "Estimated level: " << getPerformanceLevel() << endl;
-    cout << "Estimated benchmark: stronger than roughly "
-         << percentile << "% of casual ";
+    out << "\nPerformance insight:\n";
+    out << "Estimated level: " << getPerformanceLevel() << endl;
+    out << "Estimated benchmark: stronger than roughly "
+        << percentile << "% of casual ";
 
     if (gender == "Male") {
-        cout << "male";
+        out << "male";
     } else {
-        cout << "female";
+        out << "female";
     }
 
-    cout << " users in this simplified project benchmark.\n";
+    out << " users in this simplified project benchmark.\n";
 
     if (unit == "kg") {
-        cout << "Strength ratio: " << value / bodyWeightKg
-             << "x your body weight." << endl;
+        out << "Strength ratio: " << value / bodyWeightKg
+            << "x your body weight." << endl;
     }
 
     if (exerciseName == "Push-up") {
-        cout << "This is based on maximum push-up repetitions in one set.\n";
+        out << "This is based on maximum push-up repetitions in one set.\n";
     } else if (exerciseName == "Pull-up") {
-        cout << "This is based on maximum pull-up repetitions in one set.\n";
+        out << "This is based on maximum pull-up repetitions in one set.\n";
     } else if (exerciseName == "Plank") {
-        cout << "This is based on maximum plank hold time.\n";
+        out << "This is based on maximum plank hold time.\n";
     } else {
-        cout << "This is based on your best lifted weight compared to your body weight.\n";
+        out << "This is based on your best lifted weight compared to your body weight.\n";
     }
 
-    cout << "Note: This is not a scientific population percentile. It is an estimated fitness benchmark for the project.\n";
+    out << "Note: This is not a scientific population percentile. It is an estimated fitness benchmark for the project.\n";
+}
+
+ostream& operator<<(ostream& out, const PersonalRecord& record) {
+    out << record.exerciseName << ": "
+        << record.value << " "
+        << record.unit;
+
+    return out;
 }
 
 int RecordManager::findRecordIndex(const string& exerciseName) const {
@@ -245,4 +257,23 @@ void RecordManager::showAllRecords() const {
         record.showRecord();
         record.showInsight();
     }
+}
+
+void RecordManager::writeAllRecords(ostream& out) const {
+    out << "\n===== Personal Records =====\n";
+
+    if (records.empty()) {
+        out << "No personal records saved yet.\n";
+        return;
+    }
+
+    for (const PersonalRecord& record : records) {
+        out << "\n-------------------------\n";
+        out << record << endl;
+        record.writeInsight(out);
+    }
+}
+
+int RecordManager::getRecordCount() const {
+    return (int)records.size();
 }

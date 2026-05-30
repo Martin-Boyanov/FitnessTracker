@@ -13,6 +13,7 @@
 #include "../include/Challenge.h"
 #include "../include/PersonalRecord.h"
 #include "../include/TheoryCourse.h"
+#include "../include/ReportExporter.h"
 
 using namespace std;
 
@@ -718,6 +719,34 @@ void startTheoryCourse() {
     }
 }
 
+void exportProgressReport(
+    const UserProfile& user,
+    const RecordManager& recordManager
+) {
+    clearInput();
+
+    string fileName;
+
+    cout << "\n===== Export Progress Report =====\n";
+    cout << "Enter file name, for example fitness_report.txt: ";
+    getline(cin, fileName);
+
+    if (fileName.empty()) {
+        fileName = "fitness_report.txt";
+    }
+
+    ReportExporter exporter(fileName);
+
+    bool success = exporter.exportUserReport(user, recordManager);
+
+    if (success) {
+        cout << "\nReport exported successfully to: "
+             << exporter.getFileName() << endl;
+    } else {
+        cout << "\nError: could not create report file.\n";
+    }
+}
+
 void calculateOneRepMax(const vector<Exercise*>& exercises) {
     vector<int> strengthExerciseIndexes;
 
@@ -846,7 +875,8 @@ void showMenu() {
     cout << "9. Add or update personal record\n";
     cout << "10. Show personal records\n";
     cout << "11. Start mini theory course and quiz\n";
-    cout << "12. Exit\n";
+    cout << "12. Export progress report to file\n";
+    cout << "13. Exit\n";
     cout << "Choose option: ";
 }
 
@@ -913,6 +943,10 @@ int main() {
                 break;
 
             case 12:
+                exportProgressReport(user, recordManager);
+                break;
+
+            case 13:
                 cout << "\nExiting Fitness Tracker...\n";
                 break;
 
@@ -921,7 +955,7 @@ int main() {
                 break;
         }
 
-    } while (choice != 12);
+    } while (choice != 13);
 
     for (Exercise* exercise : exercises) {
         delete exercise;

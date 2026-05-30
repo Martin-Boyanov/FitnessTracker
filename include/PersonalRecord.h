@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <ostream>
 
 using namespace std;
 
@@ -33,6 +34,9 @@ public:
     bool updateIfBetter(double newValue);
     void showRecord() const;
     void showInsight() const;
+    void writeInsight(ostream& out) const;
+
+    friend ostream& operator<<(ostream& out, const PersonalRecord& record);
 };
 
 class RecordManager {
@@ -51,6 +55,8 @@ public:
     );
 
     void showAllRecords() const;
+    void writeAllRecords(ostream& out) const;
+    int getRecordCount() const;
 };
 
 #endif
