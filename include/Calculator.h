@@ -30,4 +30,65 @@ public:
     string getName() const override;
 };
 
+class BodyFatCalculator : public Calculator {
+private:
+    string method;
+    string gender;
+    int age;
+    double heightCm;
+    double weightKg;
+    double waistCm;
+    double neckCm;
+    double hipCm;
+
+    bool isValidResult(double result) const;
+
+public:
+    BodyFatCalculator(
+        const string& gender,
+        int age,
+        double heightCm,
+        double weightKg
+    );
+
+    BodyFatCalculator(
+        const string& gender,
+        double heightCm,
+        double waistCm,
+        double neckCm,
+        double hipCm
+    );
+
+    double calculate() const override;
+    string getName() const override;
+    string getMethodName() const;
+};
+
+class CalorieCalculator : public Calculator {
+private:
+    string gender;
+    int age;
+    double heightCm;
+    double weightKg;
+    string activityLevel;
+    string goal;
+
+    double calculateBmr() const;
+    double getActivityMultiplier() const;
+
+public:
+    CalorieCalculator(
+        const string& gender,
+        int age,
+        double heightCm,
+        double weightKg,
+        const string& activityLevel,
+        const string& goal
+    );
+
+    double calculate() const override;
+    string getName() const override;
+    string getRecommendation() const;
+};
+
 #endif

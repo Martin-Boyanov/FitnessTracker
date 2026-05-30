@@ -1,12 +1,155 @@
 #include <iostream>
 #include <vector>
 #include <limits>
+#include <iomanip>
+#include <string>
+#include <ctime>
+#include <sstream>
 #include "../include/UserProfile.h"
 #include "../include/Exercise.h"
 #include "../include/Workout.h"
 #include "../include/Calculator.h"
 
 using namespace std;
+
+void clearInput() {
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+}
+
+int readIntInRange(const string& message, int minValue, int maxValue) {
+    int value;
+
+    while (true) {
+        cout << message;
+        cin >> value;
+
+        if (!cin.fail() && value >= minValue && value <= maxValue) {
+            return value;
+        }
+
+        clearInput();
+        cout << "Invalid input. Enter a value between "
+             << minValue << " and " << maxValue << ".\n";
+    }
+}
+
+double readDoubleInRange(const string& message, double minValue, double maxValue) {
+    double value;
+
+    while (true) {
+        cout << message;
+        cin >> value;
+
+        if (!cin.fail() && value >= minValue && value <= maxValue) {
+            return value;
+        }
+
+        clearInput();
+        cout << "Invalid input. Enter a value between "
+             << minValue << " and " << maxValue << ".\n";
+    }
+}
+
+string getTodayDate() {
+    time_t now = time(0);
+    tm* localTime = localtime(&now);
+
+    stringstream ss;
+    ss << localTime->tm_mday << "."
+       << localTime->tm_mon + 1 << "."
+       << localTime->tm_year + 1900;
+
+    return ss.str();
+}
+
+string chooseGender() {
+    cout << "\nChoose gender:\n";
+    cout << "1. Male\n";
+    cout << "2. Female\n";
+
+    int choice = readIntInRange("Choose option: ", 1, 2);
+
+    if (choice == 1) {
+        return "Male";
+    }
+
+    return "Female";
+}
+
+string chooseActivityLevel() {
+    cout << "\nChoose activity level:\n";
+    cout << "1. Low - little or no training\n";
+    cout << "2. Light - 1-3 workouts per week\n";
+    cout << "3. Moderate - 3-5 workouts per week\n";
+    cout << "4. High - 6+ workouts per week\n";
+
+    int choice = readIntInRange("Choose option: ", 1, 4);
+
+    if (choice == 1) {
+        return "Low";
+    }
+
+    if (choice == 2) {
+        return "Light";
+    }
+
+    if (choice == 3) {
+        return "Moderate";
+    }
+
+    return "High";
+}
+
+string chooseGoal() {
+    cout << "\nChoose goal:\n";
+    cout << "1. Lose fat\n";
+    cout << "2. Maintain weight\n";
+    cout << "3. Build muscle\n";
+
+    int choice = readIntInRange("Choose option: ", 1, 3);
+
+    if (choice == 1) {
+        return "Lose fat";
+    }
+
+    if (choice == 2) {
+        return "Maintain weight";
+    }
+
+    return "Build muscle";
+}
+
+UserProfile createUserProfile() {
+    string name;
+
+    cout << "===== Create User Profile =====\n";
+    cout << "Enter your name: ";
+    getline(cin, name);
+
+    if (name.empty()) {
+        name = "User";
+    }
+
+    string gender = chooseGender();
+    int age = readIntInRange("Enter age: ", 10, 100);
+    double heightCm = readDoubleInRange("Enter height in cm: ", 100, 250);
+    double weightKg = readDoubleInRange("Enter weight in kg: ", 30, 300);
+    string activityLevel = chooseActivityLevel();
+    string goal = chooseGoal();
+
+    cout << "\nProfile created successfully.\n";
+
+    return UserProfile(
+        name,
+        age,
+        gender,
+        heightCm,
+        weightKg,
+        activityLevel,
+        goal
+    );
+}
 
 vector<Exercise*> createExerciseDatabase() {
     vector<Exercise*> exercises;
@@ -63,25 +206,124 @@ void showExerciseDatabase(const vector<Exercise*>& exercises) {
     }
 }
 
-void showDemoWorkout(const vector<Exercise*>& exercises) {
+double getStrengthMultiplier(const UserProfile& user) {
+    if (user.getActivityLevel() == "Low") {
+        return 0.45;
+    }
+
+    if (user.getActivityLevel() == "Light") {
+        return 0.55;
+    }
+
+    if (user.getActivityLevel() == "Moderate") {
+        return 0.70;
+    }
+
+    return 0.85;
+}
+
+int getRecommendedSets(const UserProfile& user) {
+    if (user.getGoal() == "Build muscle") {
+        return 4;
+    }
+
+    if (user.getGoal() == "Lose fat") {
+        return 3;
+    }
+
+    return 3;
+}
+
+int getRecommendedReps(const UserProfile& user) {
+    if (user.getGoal() == "Build muscle") {
+        return 8;
+    }
+
+    if (user.getGoal() == "Lose fat") {
+        return 12;
+    }
+
+    return 10;
+}
+
+int getWorkoutDuration(const UserProfile& user) {
+    if (user.getActivityLevel() == "Low") {
+        return 45;
+    }
+
+    if (user.getActivityLevel() == "Light") {
+        return 55;
+    }
+
+    if (user.getActivityLevel() == "Moderate") {
+        return 70;
+    }
+
+    return 85;
+}
+
+void showPersonalizedWorkout(const vector<Exercise*>& exercises, const UserProfile& user) {
+    string todayDate = getTodayDate();
+
+    int sets = getRecommendedSets(user);
+    int reps = getRecommendedReps(user);
+    int duration = getWorkoutDuration(user);
+
+    double strengthMultiplier = getStrengthMultiplier(user);
+    double bodyWeight = user.getWeightKg();
+
+    double benchWeight = bodyWeight * strengthMultiplier;
+    double squatWeight = bodyWeight * (strengthMultiplier + 0.20);
+
     WorkoutSession workout(
-        "17.05.2026",
-        "Chest and legs workout",
-        75
+        todayDate,
+        "Personalized workout based on your goal, weight and activity level",
+        duration
     );
 
     ExerciseLog benchPressLog(exercises[1]);
-    benchPressLog.addSet(ExerciseSet(10, 80));
-    benchPressLog.addSet(ExerciseSet(8, 85));
-    benchPressLog.addSet(ExerciseSet(6, 90));
+
+    for (int i = 0; i < sets; i++) {
+        benchPressLog.addSet(ExerciseSet(reps, benchWeight + i * 2.5));
+    }
 
     ExerciseLog squatLog(exercises[0]);
-    squatLog.addSet(ExerciseSet(10, 90));
-    squatLog.addSet(ExerciseSet(8, 100));
-    squatLog.addSet(ExerciseSet(6, 110));
+
+    for (int i = 0; i < sets; i++) {
+        squatLog.addSet(ExerciseSet(reps, squatWeight + i * 5));
+    }
 
     workout.addExerciseLog(benchPressLog);
     workout.addExerciseLog(squatLog);
+
+    cout << "\n===== Personalized Workout Plan =====\n";
+    cout << "This workout is adapted to your profile data.\n";
+    cout << "Your goal: " << user.getGoal() << endl;
+    cout << "Your activity level: " << user.getActivityLevel() << endl;
+    cout << "Your body weight: " << user.getWeightKg() << " kg" << endl;
+
+    cout << "\nHow the workout was adapted:\n";
+
+    if (user.getGoal() == "Build muscle") {
+        cout << "- Because your goal is muscle gain, the workout uses moderate reps and more sets.\n";
+    } else if (user.getGoal() == "Lose fat") {
+        cout << "- Because your goal is fat loss, the workout uses higher reps and slightly lower volume.\n";
+    } else {
+        cout << "- Because your goal is maintenance, the workout uses a balanced rep and set range.\n";
+    }
+
+    if (user.getActivityLevel() == "Low") {
+        cout << "- Because your activity level is low, the starting weights and duration are conservative.\n";
+    } else if (user.getActivityLevel() == "Light") {
+        cout << "- Because your activity level is light, the workout stays beginner-friendly.\n";
+    } else if (user.getActivityLevel() == "Moderate") {
+        cout << "- Because your activity level is moderate, the workout uses a balanced difficulty.\n";
+    } else {
+        cout << "- Because your activity level is high, the workout uses a higher difficulty and longer duration.\n";
+    }
+
+    cout << "- The suggested weights are estimated from your body weight.\n";
+    cout << "- This is not a perfect coach, but it gives a personalized starting point.\n";
 
     workout.showWorkout();
 }
@@ -104,45 +346,21 @@ void calculateOneRepMax(const vector<Exercise*>& exercises) {
         return;
     }
 
-    int choice;
-    cout << "Choose exercise: ";
-    cin >> choice;
-
-    if (cin.fail() || choice < 1 || choice > (int)strengthExerciseIndexes.size()) {
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout << "\nInvalid exercise choice.\n";
-        return;
-    }
+    int choice = readIntInRange(
+        "Choose exercise: ",
+        1,
+        (int)strengthExerciseIndexes.size()
+    );
 
     int realExerciseIndex = strengthExerciseIndexes[choice - 1];
     string exerciseName = exercises[realExerciseIndex]->getName();
 
-    double weightKg;
-    int reps;
-
-    cout << "Enter weight in kg: ";
-    cin >> weightKg;
-
-    if (cin.fail() || weightKg <= 0) {
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout << "\nInvalid weight.\n";
-        return;
-    }
-
-    cout << "Enter reps: ";
-    cin >> reps;
-
-    if (cin.fail() || reps <= 0) {
-        cin.clear();
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout << "\nInvalid reps.\n";
-        return;
-    }
+    double weightKg = readDoubleInRange("Enter weight in kg: ", 1, 500);
+    int reps = readIntInRange("Enter reps: ", 1, 30);
 
     OneRepMaxCalculator calculator(exerciseName, weightKg, reps);
 
+    cout << fixed << setprecision(2);
     cout << "\n===== One Rep Max Calculator =====\n";
     cout << "Exercise: " << calculator.getExerciseName() << endl;
     cout << "Weight: " << calculator.getWeightKg() << " kg" << endl;
@@ -150,27 +368,95 @@ void calculateOneRepMax(const vector<Exercise*>& exercises) {
     cout << "Estimated 1RM: " << calculator.calculate() << " kg" << endl;
 }
 
+void calculateBodyFat(const UserProfile& user) {
+    cout << "\n===== Body Fat Percentage Calculator =====\n";
+    cout << "Choose calculation method:\n";
+    cout << "1. Simple estimate using your profile data\n";
+    cout << "2. More detailed estimate using waist, neck and hip measurements\n";
+
+    int methodChoice = readIntInRange("Choose option: ", 1, 2);
+
+    BodyFatCalculator* calculator = nullptr;
+
+    if (methodChoice == 1) {
+        calculator = new BodyFatCalculator(
+            user.getGender(),
+            user.getAge(),
+            user.getHeightCm(),
+            user.getWeightKg()
+        );
+    } else {
+        double waistCm = readDoubleInRange("Enter waist in cm: ", 40, 200);
+        double neckCm = readDoubleInRange("Enter neck in cm: ", 20, 70);
+        double hipCm = 0;
+
+        if (user.getGender() == "Female") {
+            hipCm = readDoubleInRange("Enter hip in cm: ", 50, 200);
+        }
+
+        calculator = new BodyFatCalculator(
+            user.getGender(),
+            user.getHeightCm(),
+            waistCm,
+            neckCm,
+            hipCm
+        );
+    }
+
+    double result = calculator->calculate();
+
+    cout << fixed << setprecision(2);
+    cout << "\nMethod: " << calculator->getMethodName() << endl;
+
+    if (result < 0) {
+        cout << "The entered data produced an unrealistic body fat result.\n";
+        cout << "Please check the measurements and try again.\n";
+    } else {
+        cout << "Estimated body fat: " << result << "%" << endl;
+        cout << "Use this as an estimate, not as a medical measurement.\n";
+    }
+
+    delete calculator;
+}
+
+void calculateCalories(const UserProfile& user) {
+    CalorieCalculator calculator(
+        user.getGender(),
+        user.getAge(),
+        user.getHeightCm(),
+        user.getWeightKg(),
+        user.getActivityLevel(),
+        user.getGoal()
+    );
+
+    cout << fixed << setprecision(2);
+    cout << "\n===== Daily Calorie Result =====\n";
+    cout << "Gender: " << user.getGender() << endl;
+    cout << "Age: " << user.getAge() << endl;
+    cout << "Height: " << user.getHeightCm() << " cm" << endl;
+    cout << "Weight: " << user.getWeightKg() << " kg" << endl;
+    cout << "Goal: " << user.getGoal() << endl;
+    cout << "Activity level: " << user.getActivityLevel() << endl;
+    cout << "Recommended daily calories: "
+         << calculator.calculate() << " kcal" << endl;
+    cout << calculator.getRecommendation() << endl;
+    cout << "This is an estimate, not a medical nutrition plan.\n";
+}
+
 void showMenu() {
     cout << "\n===== Fitness Tracker =====\n";
     cout << "1. Show user profile\n";
     cout << "2. Show exercise database\n";
-    cout << "3. Show workout session example\n";
+    cout << "3. Show personalized workout\n";
     cout << "4. Calculate one rep max\n";
-    cout << "5. Exit\n";
+    cout << "5. Calculate body fat percentage\n";
+    cout << "6. Calculate daily calories\n";
+    cout << "7. Exit\n";
     cout << "Choose option: ";
 }
 
 int main() {
-    UserProfile user(
-        "Alex",
-        17,
-        "Male",
-        178,
-        72,
-        "Moderate",
-        "Build muscle"
-    );
-
+    UserProfile user = createUserProfile();
     vector<Exercise*> exercises = createExerciseDatabase();
 
     int choice;
@@ -180,8 +466,7 @@ int main() {
         cin >> choice;
 
         if (cin.fail()) {
-            cin.clear();
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            clearInput();
             cout << "\nInvalid input. Try again.\n";
             continue;
         }
@@ -196,7 +481,7 @@ int main() {
                 break;
 
             case 3:
-                showDemoWorkout(exercises);
+                showPersonalizedWorkout(exercises, user);
                 break;
 
             case 4:
@@ -204,6 +489,14 @@ int main() {
                 break;
 
             case 5:
+                calculateBodyFat(user);
+                break;
+
+            case 6:
+                calculateCalories(user);
+                break;
+
+            case 7:
                 cout << "\nExiting Fitness Tracker...\n";
                 break;
 
@@ -212,7 +505,7 @@ int main() {
                 break;
         }
 
-    } while (choice != 5);
+    } while (choice != 7);
 
     for (Exercise* exercise : exercises) {
         delete exercise;
