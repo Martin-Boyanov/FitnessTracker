@@ -10,6 +10,7 @@
 #include "../include/Workout.h"
 #include "../include/Calculator.h"
 #include "../include/WorkoutPlan.h"
+#include "../include/Challenge.h"
 
 using namespace std;
 
@@ -405,6 +406,92 @@ void generateWorkoutPlanByEquipment(const vector<Exercise*>& exercises) {
     plan.showPlan();
 }
 
+void startFitnessChallenge(const vector<Exercise*>& exercises) {
+    vector<int> challengeExerciseIndexes;
+
+    cout << "\n===== Choose Challenge Exercise =====\n";
+
+    for (int i = 0; i < (int)exercises.size(); i++) {
+        if (dynamic_cast<BodyweightExercise*>(exercises[i]) != nullptr) {
+            challengeExerciseIndexes.push_back(i);
+            cout << challengeExerciseIndexes.size() << ". "
+                 << exercises[i]->getName() << endl;
+        }
+    }
+
+    if (challengeExerciseIndexes.empty()) {
+        cout << "\nNo bodyweight exercises available for challenges.\n";
+        return;
+    }
+
+    int choice = readIntInRange(
+        "Choose exercise: ",
+        1,
+        (int)challengeExerciseIndexes.size()
+    );
+
+    int realExerciseIndex = challengeExerciseIndexes[choice - 1];
+    Exercise* selectedExercise = exercises[realExerciseIndex];
+
+    cout << "\nChoose challenge duration:\n";
+    cout << "1. 15 days\n";
+    cout << "2. 30 days\n";
+
+    int durationChoice = readIntInRange("Choose option: ", 1, 2);
+    int durationDays = durationChoice == 1 ? 15 : 30;
+
+    bool isPlank = selectedExercise->getName() == "Plank";
+    string unit = isPlank ? "seconds" : "reps";
+
+    int dailyTarget;
+
+    if (isPlank) {
+        dailyTarget = readIntInRange("Enter daily target seconds: ", 5, 3600);
+    } else {
+        dailyTarget = readIntInRange("Enter daily target total reps: ", 1, 5000);
+    }
+
+    TrainingChallenge challenge(
+        selectedExercise->getName() + " Challenge",
+        durationDays,
+        selectedExercise,
+        dailyTarget,
+        unit
+    );
+
+    challenge.showChallenge();
+
+    int daysToLog = readIntInRange(
+        "How many days do you want to log now: ",
+        1,
+        durationDays
+    );
+
+    for (int i = 0; i < daysToLog; i++) {
+        cout << "\nDay " << challenge.getCurrentDay() << endl;
+
+        int completedAmount;
+
+        if (isPlank) {
+            completedAmount = readIntInRange(
+                "Enter completed total seconds today: ",
+                0,
+                10000
+            );
+        } else {
+            completedAmount = readIntInRange(
+                "Enter completed total reps today: ",
+                0,
+                10000
+            );
+        }
+
+        challenge.updateDay(completedAmount);
+    }
+
+    challenge.showProgress();
+}
+
 void calculateOneRepMax(const vector<Exercise*>& exercises) {
     vector<int> strengthExerciseIndexes;
 
@@ -529,7 +616,8 @@ void showMenu() {
     cout << "5. Calculate body fat percentage\n";
     cout << "6. Calculate daily calories\n";
     cout << "7. Generate workout plan by equipment\n";
-    cout << "8. Exit\n";
+    cout << "8. Start fitness challenge\n";
+    cout << "9. Exit\n";
     cout << "Choose option: ";
 }
 
@@ -579,6 +667,10 @@ int main() {
                 break;
 
             case 8:
+                startFitnessChallenge(exercises);
+                break;
+
+            case 9:
                 cout << "\nExiting Fitness Tracker...\n";
                 break;
 
@@ -587,7 +679,7 @@ int main() {
                 break;
         }
 
-    } while (choice != 8);
+    } while (choice != 9);
 
     for (Exercise* exercise : exercises) {
         delete exercise;
