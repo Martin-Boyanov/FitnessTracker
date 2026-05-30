@@ -821,6 +821,22 @@ void buildCustomWorkoutAfterTheory(
     }
 
     builder.showWorkout();
+
+    cout << "\nDo you want to save this workout to a text file?\n";
+    cout << "1. Yes\n";
+    cout << "2. No\n";
+
+    int saveChoice = readIntInRange("Choose option: ", 1, 2);
+
+    if (saveChoice == 1) {
+        bool saved = builder.saveToTextFile();
+
+        if (!saved) {
+            cout << "\nError: workout could not be saved.\n";
+        }
+    } else {
+        cout << "\nWorkout was not saved.\n";
+    }
 }
 
 void startFitnessChallenge(const vector<Exercise*>& exercises) {
