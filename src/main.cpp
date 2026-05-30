@@ -9,6 +9,7 @@
 #include "../include/Exercise.h"
 #include "../include/Workout.h"
 #include "../include/Calculator.h"
+#include "../include/WorkoutPlan.h"
 
 using namespace std;
 
@@ -174,12 +175,50 @@ vector<Exercise*> createExerciseDatabase() {
         8
     ));
 
+    exercises.push_back(new StrengthExercise(
+        "Dumbbell Row",
+        "Back and biceps",
+        "Dumbbells",
+        "Medium",
+        "The dumbbell row trains the lats, upper back, rear deltoids and biceps.",
+        4,
+        10
+    ));
+
+    exercises.push_back(new StrengthExercise(
+        "Dumbbell Shoulder Press",
+        "Shoulders and triceps",
+        "Dumbbells",
+        "Medium",
+        "The dumbbell shoulder press trains the front and side deltoids and also uses the triceps.",
+        3,
+        10
+    ));
+
     exercises.push_back(new BodyweightExercise(
         "Push-up",
         "Chest, shoulders and triceps",
         "Bodyweight",
         "Easy",
         "Push-ups train the chest, shoulders, triceps and core stability.",
+        1
+    ));
+
+    exercises.push_back(new BodyweightExercise(
+        "Pull-up",
+        "Back and biceps",
+        "Bodyweight",
+        "Hard",
+        "Pull-ups train the lats, upper back, biceps and grip strength.",
+        3
+    ));
+
+    exercises.push_back(new BodyweightExercise(
+        "Plank",
+        "Core",
+        "Bodyweight",
+        "Easy",
+        "The plank trains core stability, abs, lower back and shoulder endurance.",
         1
     ));
 
@@ -296,8 +335,10 @@ void showPersonalizedWorkout(const vector<Exercise*>& exercises, const UserProfi
     workout.addExerciseLog(benchPressLog);
     workout.addExerciseLog(squatLog);
 
+    cout << fixed << setprecision(2);
     cout << "\n===== Personalized Workout Plan =====\n";
     cout << "This workout is adapted to your profile data.\n";
+    cout << "Date: " << todayDate << endl;
     cout << "Your goal: " << user.getGoal() << endl;
     cout << "Your activity level: " << user.getActivityLevel() << endl;
     cout << "Your body weight: " << user.getWeightKg() << " kg" << endl;
@@ -326,6 +367,42 @@ void showPersonalizedWorkout(const vector<Exercise*>& exercises, const UserProfi
     cout << "- This is not a perfect coach, but it gives a personalized starting point.\n";
 
     workout.showWorkout();
+}
+
+string chooseEquipmentType() {
+    cout << "\nChoose available equipment:\n";
+    cout << "1. Full gym\n";
+    cout << "2. Dumbbells\n";
+    cout << "3. Bodyweight only\n";
+    cout << "4. Travel mode\n";
+
+    int choice = readIntInRange("Choose option: ", 1, 4);
+
+    if (choice == 1) {
+        return "Full gym";
+    }
+
+    if (choice == 2) {
+        return "Dumbbells";
+    }
+
+    if (choice == 3) {
+        return "Bodyweight only";
+    }
+
+    return "Travel mode";
+}
+
+void generateWorkoutPlanByEquipment(const vector<Exercise*>& exercises) {
+    string equipmentType = chooseEquipmentType();
+
+    WorkoutPlan plan(
+        "Adaptive Equipment-Based Plan",
+        equipmentType
+    );
+
+    plan.generateByEquipment(exercises);
+    plan.showPlan();
 }
 
 void calculateOneRepMax(const vector<Exercise*>& exercises) {
@@ -451,7 +528,8 @@ void showMenu() {
     cout << "4. Calculate one rep max\n";
     cout << "5. Calculate body fat percentage\n";
     cout << "6. Calculate daily calories\n";
-    cout << "7. Exit\n";
+    cout << "7. Generate workout plan by equipment\n";
+    cout << "8. Exit\n";
     cout << "Choose option: ";
 }
 
@@ -497,6 +575,10 @@ int main() {
                 break;
 
             case 7:
+                generateWorkoutPlanByEquipment(exercises);
+                break;
+
+            case 8:
                 cout << "\nExiting Fitness Tracker...\n";
                 break;
 
@@ -505,7 +587,7 @@ int main() {
                 break;
         }
 
-    } while (choice != 7);
+    } while (choice != 8);
 
     for (Exercise* exercise : exercises) {
         delete exercise;
