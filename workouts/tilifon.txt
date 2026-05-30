@@ -1,0 +1,21 @@
+===== Custom Workout =====
+Workout name: tilifon
+
+This workout was created after passing the mini theory course.
+Each exercise includes a reason so the user understands why it belongs in the plan.
+
+Exercise 1:
+Name: Pull-up
+Type: Bodyweight
+Target muscle: Back and biceps
+Prescription: 3 sets x 12 reps
+Why it is included: It fits the available equipment: Bodyweight.
+
+Exercise 2:
+Name: Bench Press
+Type: Strength
+Target muscle: Chest, shoulders and triceps
+Prescription: 4 sets x 13 reps x 65 kg
+Why it is included: It is included because the user wants measurable progress on this exercise.
+
+===== End Of Workout =====

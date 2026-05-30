@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <ostream>
 
 using namespace std;
 
@@ -25,6 +26,7 @@ public:
 
     void showExercise() const;
     void writeToFile(ostream& out, int index) const;
+    void writeHtmlToFile(ostream& out, int index) const;
 };
 
 class CustomWorkoutBuilder {
@@ -33,6 +35,7 @@ private:
     vector<CustomWorkoutExercise> selectedExercises;
 
     string createSafeFileName(const string& text) const;
+    string escapeHtml(const string& text) const;
 
 public:
     CustomWorkoutBuilder(const string& workoutName);
@@ -42,6 +45,8 @@ public:
     void showWorkout() const;
 
     bool saveToTextFile() const;
+    bool saveToHtmlFile() const;
+
     string getWorkoutName() const;
 };
 
