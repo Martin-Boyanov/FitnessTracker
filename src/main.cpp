@@ -14,6 +14,7 @@
 #include "../include/PersonalRecord.h"
 #include "../include/TheoryCourse.h"
 #include "../include/ReportExporter.h"
+#include "../include/CustomWorkoutBuilder.h"
 
 using namespace std;
 
@@ -647,6 +648,181 @@ void generateWorkoutPlanByEquipment(const vector<Exercise*>& exercises) {
     plan.showPlan();
 }
 
+string getExerciseTypeName(Exercise* exercise) {
+    if (dynamic_cast<StrengthExercise*>(exercise) != nullptr) {
+        return "Strength";
+    }
+
+    if (dynamic_cast<BodyweightExercise*>(exercise) != nullptr) {
+        return "Bodyweight";
+    }
+
+    if (dynamic_cast<CardioExercise*>(exercise) != nullptr) {
+        return "Cardio";
+    }
+
+    return "Unknown";
+}
+
+string chooseReasonForExercise(Exercise* exercise) {
+    cout << "\nWhy do you want to include " << exercise->getName() << "?\n";
+    cout << "1. It targets the muscle group I want to train\n";
+    cout << "2. It balances the workout movement pattern\n";
+    cout << "3. It helps me progress toward a personal record\n";
+    cout << "4. It fits my available equipment\n";
+    cout << "5. Custom reason\n";
+
+    int choice = readIntInRange("Choose option: ", 1, 5);
+
+    if (choice == 1) {
+        return "It targets " + exercise->getTargetMuscle() + ", which matches the goal of this workout.";
+    }
+
+    if (choice == 2) {
+        return "It helps balance the workout by adding a different movement pattern.";
+    }
+
+    if (choice == 3) {
+        return "It is included because the user wants measurable progress on this exercise.";
+    }
+
+    if (choice == 4) {
+        return "It fits the available equipment: " + exercise->getEquipment() + ".";
+    }
+
+    clearInput();
+
+    string reason;
+
+    cout << "Enter your custom reason: ";
+    getline(cin, reason);
+
+    if (reason.empty()) {
+        return "The user chose this exercise for a personal reason.";
+    }
+
+    return reason;
+}
+
+string createPrescriptionForExercise(Exercise* exercise) {
+    if (dynamic_cast<StrengthExercise*>(exercise) != nullptr) {
+        int sets = readIntInRange("Enter sets: ", 1, 10);
+        int reps = readIntInRange("Enter reps per set: ", 1, 30);
+        double weight = readDoubleInRange("Enter weight in kg: ", 1, 500);
+
+        stringstream ss;
+        ss << sets << " sets x " << reps << " reps x " << weight << " kg";
+        return ss.str();
+    }
+
+    if (dynamic_cast<BodyweightExercise*>(exercise) != nullptr) {
+        if (exercise->getName() == "Plank") {
+            int sets = readIntInRange("Enter sets: ", 1, 10);
+            int seconds = readIntInRange("Enter seconds per set: ", 5, 600);
+
+            stringstream ss;
+            ss << sets << " sets x " << seconds << " seconds";
+            return ss.str();
+        }
+
+        int sets = readIntInRange("Enter sets: ", 1, 10);
+        int reps = readIntInRange("Enter reps per set: ", 1, 200);
+
+        stringstream ss;
+        ss << sets << " sets x " << reps << " reps";
+        return ss.str();
+    }
+
+    if (dynamic_cast<CardioExercise*>(exercise) != nullptr) {
+        int minutes = readIntInRange("Enter duration in minutes: ", 1, 180);
+
+        cout << "\nChoose intensity:\n";
+        cout << "1. Low\n";
+        cout << "2. Moderate\n";
+        cout << "3. High\n";
+
+        int intensityChoice = readIntInRange("Choose option: ", 1, 3);
+        string intensity = "Low";
+
+        if (intensityChoice == 2) {
+            intensity = "Moderate";
+        } else if (intensityChoice == 3) {
+            intensity = "High";
+        }
+
+        stringstream ss;
+        ss << minutes << " minutes at " << intensity << " intensity";
+        return ss.str();
+    }
+
+    return "No prescription";
+}
+
+void buildCustomWorkoutAfterTheory(
+    const vector<Exercise*>& exercises,
+    bool theoryCoursePassed
+) {
+    if (!theoryCoursePassed) {
+        cout << "\nThis feature is locked.\n";
+        cout << "You must pass the mini theory course first.\n";
+        cout << "The goal is to make sure you understand why exercises belong in a workout.\n";
+        return;
+    }
+
+    clearInput();
+
+    string workoutName;
+
+    cout << "\n===== Build Your Own Workout =====\n";
+    cout << "You unlocked this because you passed the theory course.\n";
+    cout << "Enter workout name: ";
+    getline(cin, workoutName);
+
+    CustomWorkoutBuilder builder(workoutName);
+
+    int exerciseCount = readIntInRange(
+        "How many exercises do you want to add: ",
+        1,
+        8
+    );
+
+    for (int i = 0; i < exerciseCount; i++) {
+        cout << "\n===== Choose Exercise " << i + 1 << " =====\n";
+
+        for (int j = 0; j < (int)exercises.size(); j++) {
+            cout << j + 1 << ". " << exercises[j]->getName()
+                 << " | Target: " << exercises[j]->getTargetMuscle()
+                 << " | Equipment: " << exercises[j]->getEquipment()
+                 << endl;
+        }
+
+        int choice = readIntInRange(
+            "Choose exercise: ",
+            1,
+            (int)exercises.size()
+        );
+
+        Exercise* selectedExercise = exercises[choice - 1];
+
+        cout << "\nSelected: " << selectedExercise->getName() << endl;
+        cout << "Theory reminder: " << selectedExercise->getTargetMuscle() << endl;
+        cout << "Progression idea: " << selectedExercise->getProgressionInfo() << endl;
+
+        string prescription = createPrescriptionForExercise(selectedExercise);
+        string reason = chooseReasonForExercise(selectedExercise);
+
+        builder.addExercise(CustomWorkoutExercise(
+            selectedExercise->getName(),
+            selectedExercise->getTargetMuscle(),
+            getExerciseTypeName(selectedExercise),
+            prescription,
+            reason
+        ));
+    }
+
+    builder.showWorkout();
+}
+
 void startFitnessChallenge(const vector<Exercise*>& exercises) {
     vector<int> challengeExerciseIndexes;
 
@@ -962,7 +1138,7 @@ void calculateCalories(const UserProfile& user) {
     cout << "This is an estimate, not a medical nutrition plan.\n";
 }
 
-void showMenu() {
+void showMenu(bool theoryCoursePassed) {
     cout << "\n===== Fitness Tracker =====\n";
     cout << "1. Show user profile\n";
     cout << "2. Show exercise database\n";
@@ -975,8 +1151,15 @@ void showMenu() {
     cout << "9. Add or update personal record\n";
     cout << "10. Show personal records\n";
     cout << "11. Start mini theory course and quiz\n";
-    cout << "12. Export progress report to file\n";
-    cout << "13. Exit\n";
+
+    if (theoryCoursePassed) {
+        cout << "12. Build your own workout - unlocked\n";
+    } else {
+        cout << "12. Build your own workout - locked until theory quiz is passed\n";
+    }
+
+    cout << "13. Export progress report to file\n";
+    cout << "14. Exit\n";
     cout << "Choose option: ";
 }
 
@@ -984,11 +1167,12 @@ int main() {
     UserProfile user = createUserProfile();
     vector<Exercise*> exercises = createExerciseDatabase();
     RecordManager recordManager;
+    bool theoryCoursePassed = false;
 
     int choice;
 
     do {
-        showMenu();
+        showMenu(theoryCoursePassed);
         cin >> choice;
 
         if (cin.fail()) {
@@ -1039,14 +1223,20 @@ int main() {
                 break;
 
             case 11:
-                startTheoryCourse();
+                if (startTheoryCourse()) {
+                    theoryCoursePassed = true;
+                }
                 break;
 
             case 12:
-                exportProgressReport(user, recordManager);
+                buildCustomWorkoutAfterTheory(exercises, theoryCoursePassed);
                 break;
 
             case 13:
+                exportProgressReport(user, recordManager);
+                break;
+
+            case 14:
                 cout << "\nExiting Fitness Tracker...\n";
                 break;
 
@@ -1055,7 +1245,7 @@ int main() {
                 break;
         }
 
-    } while (choice != 13);
+    } while (choice != 14);
 
     for (Exercise* exercise : exercises) {
         delete exercise;

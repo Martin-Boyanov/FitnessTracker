@@ -1,0 +1,22 @@
+===== Fitness Tracker Progress Report =====
+
+===== User Profile =====
+Name: lowda
+Age: 15
+Gender: Female
+Height: 168 cm
+Weight: 65 kg
+Activity level: Moderate
+Goal: Maintain weight
+
+===== Calorie Estimate =====
+Recommended daily calories: 2269.2 kcal
+Suggested goal: maintenance calories.
+This is an estimate, not a medical nutrition plan.
+
+Saved personal records: 0
+
+===== Personal Records =====
+No personal records saved yet.
+
+===== End Of Report =====
