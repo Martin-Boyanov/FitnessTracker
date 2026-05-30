@@ -11,6 +11,7 @@
 #include "../include/Calculator.h"
 #include "../include/WorkoutPlan.h"
 #include "../include/Challenge.h"
+#include "../include/PersonalRecord.h"
 
 using namespace std;
 
@@ -492,6 +493,63 @@ void startFitnessChallenge(const vector<Exercise*>& exercises) {
     challenge.showProgress();
 }
 
+void trackPersonalRecord(
+    const vector<Exercise*>& exercises,
+    RecordManager& manager,
+    const UserProfile& user
+) {
+    vector<int> recordExerciseIndexes;
+
+    cout << "\n===== Choose Exercise For Personal Record =====\n";
+
+    for (int i = 0; i < (int)exercises.size(); i++) {
+        bool isStrength = dynamic_cast<StrengthExercise*>(exercises[i]) != nullptr;
+        bool isBodyweight = dynamic_cast<BodyweightExercise*>(exercises[i]) != nullptr;
+
+        if (isStrength || isBodyweight) {
+            recordExerciseIndexes.push_back(i);
+            cout << recordExerciseIndexes.size() << ". "
+                 << exercises[i]->getName() << endl;
+        }
+    }
+
+    if (recordExerciseIndexes.empty()) {
+        cout << "\nNo exercises available for personal records.\n";
+        return;
+    }
+
+    int choice = readIntInRange(
+        "Choose exercise: ",
+        1,
+        (int)recordExerciseIndexes.size()
+    );
+
+    int realExerciseIndex = recordExerciseIndexes[choice - 1];
+    Exercise* selectedExercise = exercises[realExerciseIndex];
+
+    string unit;
+    double value;
+
+    if (dynamic_cast<StrengthExercise*>(selectedExercise) != nullptr) {
+        unit = "kg";
+        value = readDoubleInRange("Enter your best lifted weight in kg: ", 1, 500);
+    } else if (selectedExercise->getName() == "Plank") {
+        unit = "seconds";
+        value = readDoubleInRange("Enter your best plank time in seconds: ", 1, 10000);
+    } else {
+        unit = "reps";
+        value = readDoubleInRange("Enter your best max reps in one set: ", 1, 10000);
+    }
+
+    manager.addOrUpdateRecord(
+        selectedExercise->getName(),
+        value,
+        unit,
+        user.getGender(),
+        user.getWeightKg()
+    );
+}
+
 void calculateOneRepMax(const vector<Exercise*>& exercises) {
     vector<int> strengthExerciseIndexes;
 
@@ -617,13 +675,16 @@ void showMenu() {
     cout << "6. Calculate daily calories\n";
     cout << "7. Generate workout plan by equipment\n";
     cout << "8. Start fitness challenge\n";
-    cout << "9. Exit\n";
+    cout << "9. Add or update personal record\n";
+    cout << "10. Show personal records\n";
+    cout << "11. Exit\n";
     cout << "Choose option: ";
 }
 
 int main() {
     UserProfile user = createUserProfile();
     vector<Exercise*> exercises = createExerciseDatabase();
+    RecordManager recordManager;
 
     int choice;
 
@@ -671,6 +732,14 @@ int main() {
                 break;
 
             case 9:
+                trackPersonalRecord(exercises, recordManager, user);
+                break;
+
+            case 10:
+                recordManager.showAllRecords();
+                break;
+
+            case 11:
                 cout << "\nExiting Fitness Tracker...\n";
                 break;
 
@@ -679,7 +748,7 @@ int main() {
                 break;
         }
 
-    } while (choice != 9);
+    } while (choice != 11);
 
     for (Exercise* exercise : exercises) {
         delete exercise;
