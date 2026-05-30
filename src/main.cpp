@@ -12,6 +12,7 @@
 #include "../include/WorkoutPlan.h"
 #include "../include/Challenge.h"
 #include "../include/PersonalRecord.h"
+#include "../include/TheoryCourse.h"
 
 using namespace std;
 
@@ -234,6 +235,154 @@ vector<Exercise*> createExerciseDatabase() {
     ));
 
     return exercises;
+}
+
+TheoryCourse createTheoryCourse() {
+    FitnessQuiz quiz(8);
+
+    quiz.addQuestion(QuizQuestion(
+        "Which muscles does the squat mainly train?",
+        {
+            "Chest and triceps",
+            "Quadriceps, glutes, hamstrings and core",
+            "Biceps only",
+            "Shoulders only"
+        },
+        1,
+        "The squat is mainly a lower-body compound movement. It trains quadriceps, glutes, hamstrings and core stabilizers."
+    ));
+
+    quiz.addQuestion(QuizQuestion(
+        "Which exercise is more suitable for chest development?",
+        {
+            "Bench Press",
+            "Running",
+            "Plank",
+            "Dumbbell Row"
+        },
+        0,
+        "Bench Press targets the chest, front shoulders and triceps."
+    ));
+
+    quiz.addQuestion(QuizQuestion(
+        "What is progressive overload?",
+        {
+            "Changing exercises randomly every day",
+            "Slowly increasing difficulty over time",
+            "Training only once per month",
+            "Avoiding hard sets"
+        },
+        1,
+        "Progressive overload means gradually increasing weight, reps, sets or difficulty so the body has a reason to adapt."
+    ));
+
+    quiz.addQuestion(QuizQuestion(
+        "Why is the shoulder often trained with more than one movement?",
+        {
+            "Because it has different parts that work at different angles",
+            "Because shoulders do not need recovery",
+            "Because one exercise trains the entire body",
+            "Because cardio is not useful"
+        },
+        0,
+        "The shoulder has different heads, and different angles emphasize different parts of it."
+    ));
+
+    quiz.addQuestion(QuizQuestion(
+        "Which exercise is best measured by time instead of reps?",
+        {
+            "Push-up",
+            "Pull-up",
+            "Plank",
+            "Bench Press"
+        },
+        2,
+        "Plank is an isometric exercise, so it is usually measured by hold time."
+    ));
+
+    quiz.addQuestion(QuizQuestion(
+        "What does workout volume usually mean in this project?",
+        {
+            "Calories burned",
+            "Reps x weight",
+            "Body fat percentage",
+            "Heart rate"
+        },
+        1,
+        "In this project, training volume means total lifted weight: reps x weight."
+    ));
+
+    quiz.addQuestion(QuizQuestion(
+        "If your goal is muscle gain, what is usually a good training direction?",
+        {
+            "Moderate reps, enough sets and progressive overload",
+            "Never increasing difficulty",
+            "Only cardio",
+            "No recovery"
+        },
+        0,
+        "Muscle gain usually needs enough training volume, progressive overload and recovery."
+    ));
+
+    quiz.addQuestion(QuizQuestion(
+        "Why should workout plans depend on available equipment?",
+        {
+            "Because not every exercise can be done everywhere",
+            "Because equipment does not matter",
+            "Because all exercises are identical",
+            "Because bodyweight exercises are never useful"
+        },
+        0,
+        "A realistic plan must match the equipment the user actually has."
+    ));
+
+    quiz.addQuestion(QuizQuestion(
+        "Which exercise mainly targets the back and biceps?",
+        {
+            "Dumbbell Row",
+            "Bench Press",
+            "Push-up",
+            "Running"
+        },
+        0,
+        "Dumbbell Row targets the back muscles and also uses the biceps."
+    ));
+
+    quiz.addQuestion(QuizQuestion(
+        "Why should personal records be compared to your own previous results?",
+        {
+            "Because progress is individual",
+            "Because everyone has the same body",
+            "Because form does not matter",
+            "Because records should never change"
+        },
+        0,
+        "Fitness progress depends on the person, so comparing with your own history is more useful than copying others."
+    ));
+
+    TheoryCourse course("Build Your Own Basic Workout", quiz);
+
+    course.addLesson(TheoryLesson(
+        "Compound exercises",
+        "Compound exercises train multiple muscle groups at the same time. Squat, Bench Press, Pull-up and Dumbbell Row are examples. They are useful because they give a lot of training effect with fewer exercises."
+    ));
+
+    course.addLesson(TheoryLesson(
+        "Muscle groups and exercise choice",
+        "A good workout should match exercises to the muscles you want to train. Bench Press trains chest, shoulders and triceps. Squat trains legs and glutes. Rows and pull-ups train back and biceps. Plank trains core stability."
+    ));
+
+    course.addLesson(TheoryLesson(
+        "Progressive overload",
+        "To improve, the body needs a reason to adapt. This can happen by slowly increasing weight, reps, sets, time, or exercise difficulty. The goal is not random hard training, but controlled progress."
+    ));
+
+    course.addLesson(TheoryLesson(
+        "Building a simple workout",
+        "A simple workout should consider your goal, activity level, equipment and recovery. For muscle gain, use enough sets and moderate reps. For fat loss, use consistent training and nutrition control. For travel mode, choose bodyweight exercises."
+    ));
+
+    return course;
 }
 
 void showExerciseDatabase(const vector<Exercise*>& exercises) {
@@ -550,6 +699,25 @@ void trackPersonalRecord(
     );
 }
 
+void startTheoryCourse() {
+    TheoryCourse course = createTheoryCourse();
+
+    course.startCourse();
+
+    cout << "\nStart quiz now?\n";
+    cout << "1. Yes\n";
+    cout << "2. No\n";
+
+    int choice = readIntInRange("Choose option: ", 1, 2);
+
+    if (choice == 1) {
+        QuizResult result = course.startQuiz();
+        result.showResult();
+    } else {
+        cout << "\nYou can come back to the theory course later.\n";
+    }
+}
+
 void calculateOneRepMax(const vector<Exercise*>& exercises) {
     vector<int> strengthExerciseIndexes;
 
@@ -677,7 +845,8 @@ void showMenu() {
     cout << "8. Start fitness challenge\n";
     cout << "9. Add or update personal record\n";
     cout << "10. Show personal records\n";
-    cout << "11. Exit\n";
+    cout << "11. Start mini theory course and quiz\n";
+    cout << "12. Exit\n";
     cout << "Choose option: ";
 }
 
@@ -740,6 +909,10 @@ int main() {
                 break;
 
             case 11:
+                startTheoryCourse();
+                break;
+
+            case 12:
                 cout << "\nExiting Fitness Tracker...\n";
                 break;
 
@@ -748,7 +921,7 @@ int main() {
                 break;
         }
 
-    } while (choice != 11);
+    } while (choice != 12);
 
     for (Exercise* exercise : exercises) {
         delete exercise;
